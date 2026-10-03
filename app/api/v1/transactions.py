@@ -10,7 +10,7 @@ from datetime import datetime
 
 from fastapi import Query
 
-from app.schemas.transaction import TransactionCreate, TransactionResponse
+from app.schemas.transaction import TransactionCreate, TransactionUpdate, TransactionResponse
 from app.services.balance_service import apply_transaction_balance, revert_transaction_balance
 from app.services.sms_parser import parse_bank_sms
 
@@ -102,6 +102,100 @@ def get_transactions(
         .all()
     )
     return [TransactionResponse.model_validate(tx) for tx in txs]
+
+
+DEFAULT_CATEGORIES = [
+    "Food & Dining",
+    "Groceries",
+    "Transport",
+    "Shopping",
+    "Bills & Utilities",
+    "Entertainment",
+    "Health & Medical",
+    "Education",
+    "Salary",
+    "Investment",
+    "Miscellaneous",
+]
+
+
+@router.get("/categories", response_model=list[str])
+def list_categories(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+) -> list[str]:
+    db_cats = (
+        db.query(Transaction.category)
+        .join(User)
+        .filter(User.household_id == current_user.household_id)
+        .distinct()
+        .all()
+    )
+    custom = [c[0] for c in db_cats if c[0]]
+    combined = list(dict.fromkeys(DEFAULT_CATEGORIES + custom))
+    return combined
+
+
+@router.get("/{id}", response_model=TransactionResponse)
+def get_transaction(
+    id: str,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+) -> TransactionResponse:
+    tx = db.query(Transaction).filter(Transaction.id == id).first()
+    if not tx:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
+
+    if current_user.role != UserRole.ADMIN and tx.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+
+    if current_user.role == UserRole.ADMIN:
+        owner = db.query(User).filter(User.id == tx.user_id).first()
+        if not owner or owner.household_id != current_user.household_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+
+    return TransactionResponse.model_validate(tx)
+
+
+@router.patch("/{id}", response_model=TransactionResponse)
+def update_transaction(
+    id: str,
+    payload: TransactionUpdate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+) -> TransactionResponse:
+    tx = db.query(Transaction).filter(Transaction.id == id).first()
+    if not tx:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
+
+    if current_user.role != UserRole.ADMIN and tx.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+
+    account = db.query(Account).filter(Account.id == tx.account_id).first()
+    if not account:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Account not found")
+
+    amount_changed = payload.amount is not None and payload.amount != tx.amount
+    type_changed = payload.type is not None and payload.type != tx.type
+
+    if amount_changed or type_changed:
+        revert_transaction_balance(db, account, tx.type, tx.amount)
+        if payload.amount is not None:
+            tx.amount = payload.amount
+        if payload.type is not None:
+            tx.type = payload.type
+        apply_transaction_balance(db, account, tx.type, tx.amount)
+
+    if payload.category is not None:
+        tx.category = payload.category
+    if payload.description is not None:
+        tx.description = payload.description
+    if payload.date is not None:
+        tx.date = payload.date
+
+    db.commit()
+    db.refresh(tx)
+    return TransactionResponse.model_validate(tx)
 
 
 @router.delete("/{id}")

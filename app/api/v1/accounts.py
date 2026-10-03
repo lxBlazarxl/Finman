@@ -6,13 +6,14 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_current_user
 from app.core.database import get_db
 from app.models.account import Account
-from app.schemas import AccountCreate, AccountResponse, PersonalBalanceResponse, UserResponse
-from app.services.balance_service import get_user_cumulative_balance
+from app.models.transaction import Transaction
+from app.schemas import AccountCreate, AccountUpdate, AccountResponse
 
 router = APIRouter(prefix="/accounts", tags=["Accounts"])
 
 
-@router.post("/", response_model=AccountResponse)
+@router.post("", response_model=AccountResponse)
+@router.post("/", response_model=AccountResponse, include_in_schema=False)
 def create_account(
     payload: AccountCreate,
     db: Session = Depends(get_db),
@@ -30,7 +31,8 @@ def create_account(
     return AccountResponse.model_validate(account)
 
 
-@router.get("/", response_model=List[AccountResponse])
+@router.get("", response_model=List[AccountResponse])
+@router.get("/", response_model=List[AccountResponse], include_in_schema=False)
 def list_accounts(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
@@ -51,3 +53,41 @@ def get_account(
     if account.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
     return AccountResponse.model_validate(account)
+
+
+@router.patch("/{account_id}", response_model=AccountResponse)
+def update_account(
+    account_id: str,
+    payload: AccountUpdate,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+) -> AccountResponse:
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Account not found")
+    if account.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+    if payload.name is not None:
+        account.name = payload.name
+    if payload.type is not None:
+        account.type = payload.type
+    db.commit()
+    db.refresh(account)
+    return AccountResponse.model_validate(account)
+
+
+@router.delete("/{account_id}")
+def delete_account(
+    account_id: str,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    account = db.query(Account).filter(Account.id == account_id).first()
+    if not account:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Account not found")
+    if account.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+    db.query(Transaction).filter(Transaction.account_id == account.id).delete()
+    db.delete(account)
+    db.commit()
+    return {"detail": "Account deleted successfully"}

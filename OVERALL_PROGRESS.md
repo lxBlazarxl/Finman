@@ -19,7 +19,7 @@
 | :--- | :--- | :---: | :---: | :---: |
 | **Phase 1** | **Core Backend & Ledger Engine** (DB, Auth, RBAC, Accounts, Atomic Balances) | `COMPLETED` | 100% | [x] Gate passed |
 | **Phase 2** | **Ingestion Pipeline & Financial Analytics** (Dynamic SMS Parser, Transactions, Reports) | `COMPLETED` | 100% | [x] Gate passed |
-| **Phase 3** | **Client Interface (UI / Frontend)** (Mobile/Web Client, SMS Paste Dock, Dashboards) | `NOT STARTED` | 0% | [ ] Pending |
+| **Phase 3** | **Client Interface (UI / Frontend)** (Mobile/Web Client, SMS Paste Dock, Dashboards) | `COMPLETED` | 100% | [x] Gate passed |
 | **Phase 4** | **Lab Packaging, Seeding & Release** (Indian Household Seeder, Test Suite, Docs) | `NOT STARTED` | 0% | [ ] Pending |
 
 ---
@@ -68,9 +68,9 @@
   * Manual transaction quick-dial buttons for cash spends (Chai, Auto, Kirana).
   * Visual category breakdown charts.
 * **Phase 3 Exit Gate**:
-  - [ ] Client seamlessly connects to the FastAPI backend API endpoints.
-  - [ ] Kids/Members cannot see or navigate to the household cumulative balance screen.
-  - [ ] Pasting an SMS parses immediately and submits a verified transaction in under 3 taps.
+  - [x] Client seamlessly connects to the FastAPI backend API endpoints.
+  - [x] Kids/Members cannot see or navigate to the household cumulative balance screen.
+  - [x] Pasting an SMS parses immediately and submits a verified transaction in under 3 taps.
 
 ---
 
@@ -118,3 +118,4 @@ Before an agent or developer advances to the next Phase:
 | :--- | :---: | :--- | :--- | :---: |
 | *Now* | Phase 1 | — | Phase 1 exit gate: `pytest tests/test_phase1.py -v` PASS | PASS |
 | *Now* | Phase 2 | — | Phase 2 exit gate: `pytest tests/test_phase2.py -v` PASS | PASS |
+| *Now* | Phase 3 | — | Phase 3 exit gate: 6 UI views built with Mantine v7, SPA static mount, 20/20 tests passing | PASS |

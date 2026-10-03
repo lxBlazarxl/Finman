@@ -9,3 +9,7 @@ class HouseholdResponse(BaseModel):
     id: str
     name: str
     created_at: datetime
+
+
+class HouseholdUpdate(BaseModel):
+    name: str

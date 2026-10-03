@@ -9,6 +9,7 @@ from app.models.enums import AccountType, UserRole
 from app.models.account import Account
 from app.models.household import Household
 from app.models.user import User
+from app.api.deps import get_current_user
 from app.schemas import (
     LoginRequest,
     RegisterHouseholdRequest,
@@ -67,3 +68,19 @@ def login(
 
     token = create_access_token({"sub": user.id, "role": user.role.value})
     return {"access_token": token, "token_type": "bearer", "user": UserResponse.model_validate(user)}
+
+
+@router.get("/me", response_model=UserResponse)
+def get_current_user_profile(
+    current_user: User = Depends(get_current_user),
+) -> UserResponse:
+    return UserResponse.model_validate(current_user)
+
+
+@router.get("/status")
+def get_auth_status(
+    db: Session = Depends(get_db),
+) -> Dict[str, Any]:
+    initialized = db.query(Household).count() > 0
+    return {"initialized": initialized}
+

@@ -33,9 +33,9 @@ class Transaction(Base):
     amount: Mapped[float] = mapped_column(Float, nullable=False)
     type: Mapped[TransactionType] = mapped_column(nullable=False)
     category: Mapped[str] = mapped_column(String(50), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    description: Mapped[str] = mapped_column(Text, nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
-    raw_sms: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    raw_sms: Mapped[str] = mapped_column(Text, nullable=True)
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, nullable=False)
 

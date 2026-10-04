@@ -171,6 +171,11 @@ def update_transaction(
     if current_user.role != UserRole.ADMIN and tx.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
 
+    if current_user.role == UserRole.ADMIN:
+        owner = db.query(User).filter(User.id == tx.user_id).first()
+        if not owner or owner.household_id != current_user.household_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+
     account = db.query(Account).filter(Account.id == tx.account_id).first()
     if not account:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Account not found")
@@ -210,6 +215,11 @@ def delete_transaction(
 
     if current_user.role != UserRole.ADMIN and tx.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
+
+    if current_user.role == UserRole.ADMIN:
+        owner = db.query(User).filter(User.id == tx.user_id).first()
+        if not owner or owner.household_id != current_user.household_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions")
 
     account = db.query(Account).filter(Account.id == tx.account_id).first()
     if not account:

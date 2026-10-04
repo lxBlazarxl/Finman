@@ -1,7 +1,7 @@
 const path = require('path');
 const puppeteer = require('../frontend/node_modules/puppeteer-core');
 
-const ARTIFACT_DIR = '/home/bshah/.gemini/antigravity/brain/26ff945a-b258-495e-976a-5de511a6e4e9';
+const ARTIFACT_DIR = process.env.ARTIFACT_DIR || path.join(__dirname, '../docs/screenshots');
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function clickButtonWithText(page, text) {

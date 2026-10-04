@@ -16,6 +16,14 @@ class TransactionCreate(BaseModel):
     raw_sms: Optional[str] = None
 
 
+class TransactionUpdate(BaseModel):
+    amount: Optional[float] = Field(None, gt=0)
+    type: Optional[TransactionType] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    date: Optional[datetime] = None
+
+
 class TransactionResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

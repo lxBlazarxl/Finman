@@ -12,6 +12,11 @@ class AccountCreate(BaseModel):
     initial_balance: float = Field(0.0, ge=0)
 
 
+class AccountUpdate(BaseModel):
+    name: str | None = None
+    type: AccountType | None = None
+
+
 class AccountResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

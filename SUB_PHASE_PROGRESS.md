@@ -658,9 +658,9 @@
 
 ---
 
-# PHASE 3: Client Interface (Frontend / Mobile) — DEFERRED
+# PHASE 3: Client Interface (Frontend / Web) — COMPLETED
 
-> **Note**: Phase 3 (Mobile/Web Client) is deferred as per project plan. The backend remains 100% decoupled and testable via interactive Swagger UI (`/docs`).
+> **Note**: Phase 3 is completed. The responsive SPA is built with React 19 + TypeScript + Mantine v7 (`@mantine/core`, `@mantine/charts`) and is mounted directly onto the FastAPI backend to serve the full dashboard from `/` and `/assets`.
 
 ---
 
@@ -793,3 +793,4 @@
 | 2026-09-30 | Task 1.5.2 | — | `PASS` | Accounts & Balances Routers OK |
 | 2026-09-30 | Task 1.6.1 | — | `PASS` | Main App Factory OK: All Phase 1 routes mounted |
 | 2026-10-04 | Phase 4 Tasks | Gemini 3.1 Pro (High) | `PASS` | All tasks for Phase 4 completed. |
+| 2026-10-05 | Full Project Audit & Gaps Closure | Antigravity | `PASS` | SMS parser expanded (ICICI, Axis, Kotak, CC, modern UPI, universal balance extraction), account switching on tx edit, default UTC datetime, TRANSFER type balance handling, admin accounts scope, frontend auto-build in run scripts, dynamic years, 28/28 tests passing |

@@ -120,3 +120,4 @@ Before an agent or developer advances to the next Phase:
 | *Now* | Phase 2 | — | Phase 2 exit gate: `pytest tests/test_phase2.py -v` PASS | PASS |
 | *Now* | Phase 3 | — | Phase 3 exit gate: 6 UI views built with Mantine v7, SPA static mount, 20/20 tests passing | PASS |
 | *Now* | Phase 4 | — | Phase 4 exit gate: `pytest tests` PASS, seeded realistic data | PASS |
+| 2026-10-05 | Project Audit & Enhancement | Antigravity | Audited project and resolved key gaps: expanded multi-bank SMS parser (ICICI, Axis, Kotak, Cards, modern UPI, universal balance extraction), transaction account switching with balance sync, TRANSFER type handling, admin account scoping, automated frontend build in run scripts, resolved datetime deprecations; 28/28 tests passing | PASS |

@@ -1,6 +1,6 @@
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.core.database import SessionLocal, engine
 from app.models.base import Base
 from app.core.security import get_password_hash
@@ -72,7 +72,7 @@ def seed_data():
         db.refresh(home_cash)
         db.refresh(student_cash)
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         txs = []
         
         # Inflow

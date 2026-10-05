@@ -6,7 +6,7 @@ from app.core.database import get_db
 from app.models.account import Account
 from app.models.transaction import Transaction
 from app.schemas.sms import SMSParseRequest, SMSParseResult
-from datetime import datetime
+from datetime import datetime, timezone
 
 from fastapi import Query
 
@@ -41,6 +41,7 @@ def create_transaction(
 
     apply_transaction_balance(db, account, payload.type, payload.amount)
 
+    tx_date = payload.date if payload.date is not None else datetime.now(timezone.utc)
     tx = Transaction(
         account_id=account.id,
         user_id=current_user.id,
@@ -49,7 +50,7 @@ def create_transaction(
         category=payload.category,
         description=payload.description,
         raw_sms=payload.raw_sms,
-        date=payload.date,
+        date=tx_date,
     )
     db.add(tx)
     db.commit()
@@ -182,13 +183,25 @@ def update_transaction(
 
     amount_changed = payload.amount is not None and payload.amount != tx.amount
     type_changed = payload.type is not None and payload.type != tx.type
+    account_changed = payload.account_id is not None and payload.account_id != tx.account_id
 
-    if amount_changed or type_changed:
+    if amount_changed or type_changed or account_changed:
         revert_transaction_balance(db, account, tx.type, tx.amount)
+
+        if account_changed:
+            target_account = db.query(Account).filter(Account.id == payload.account_id).first()
+            if not target_account:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Target account not found")
+            if current_user.role != UserRole.ADMIN and target_account.user_id != current_user.id:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions for target account")
+            tx.account_id = target_account.id
+            account = target_account
+
         if payload.amount is not None:
             tx.amount = payload.amount
         if payload.type is not None:
             tx.type = payload.type
+
         apply_transaction_balance(db, account, tx.type, tx.amount)
 
     if payload.category is not None:

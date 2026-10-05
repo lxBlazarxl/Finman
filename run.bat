@@ -24,9 +24,23 @@ if not exist "finance.db" (
     echo Database already exists. Skipping seeder.
 )
 
+if not exist "frontend\dist\" (
+    where npm >nul 2>&1
+    if %errorlevel% equ 0 (
+        echo Building frontend assets for UI dashboard...
+        cd frontend
+        call npm install
+        call npm run build
+        cd ..
+    ) else (
+        echo Note: npm not found. Frontend static assets will not be built automatically.
+    )
+)
+
 echo.
 echo ========================================================
-echo FinMan Backend is live at http://127.0.0.1:8000/docs
+echo FinMan App is live at:     http://127.0.0.1:8000
+echo Interactive API Docs at:   http://127.0.0.1:8000/docs
 echo ========================================================
 echo.
 

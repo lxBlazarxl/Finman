@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import String, DateTime, ForeignKey, Text, Float
@@ -10,7 +10,7 @@ from app.models.enums import TransactionType
 
 
 def utcnow() -> datetime:
-    return datetime.utcnow()
+    return datetime.now(timezone.utc)
 
 
 class Transaction(Base):

@@ -15,7 +15,7 @@ def apply_transaction_balance(
     tx_type: TransactionType,
     amount: float,
 ):
-    if tx_type == TransactionType.EXPENSE:
+    if tx_type in (TransactionType.EXPENSE, TransactionType.TRANSFER):
         account.current_balance -= amount
     elif tx_type == TransactionType.INCOME:
         account.current_balance += amount
@@ -29,7 +29,7 @@ def revert_transaction_balance(
     tx_type: TransactionType,
     amount: float,
 ):
-    if tx_type == TransactionType.EXPENSE:
+    if tx_type in (TransactionType.EXPENSE, TransactionType.TRANSFER):
         account.current_balance += amount
     elif tx_type == TransactionType.INCOME:
         account.current_balance -= amount

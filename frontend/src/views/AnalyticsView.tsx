@@ -41,7 +41,13 @@ const MONTHS = [
   { value: '12', label: 'December' },
 ];
 
-const YEARS = ['2025', '2026', '2027'];
+const currentYearNum = new Date().getFullYear();
+const YEARS = [
+  String(currentYearNum - 2),
+  String(currentYearNum - 1),
+  String(currentYearNum),
+  String(currentYearNum + 1),
+];
 
 const CHART_COLORS = [
   'emerald.6',

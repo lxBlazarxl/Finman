@@ -22,9 +22,19 @@ else
     echo "Database already exists. Skipping seeder."
 fi
 
+if [ ! -d "frontend/dist" ]; then
+    if command -v npm &> /dev/null; then
+        echo "Building frontend assets for UI dashboard..."
+        (cd frontend && npm install && npm run build)
+    else
+        echo "Note: npm not found. Frontend static assets will not be built automatically."
+    fi
+fi
+
 echo ""
 echo "========================================================"
-echo "FinMan Backend is live at http://127.0.0.1:8000/docs"
+echo "FinMan App is live at:     http://127.0.0.1:8000"
+echo "Interactive API Docs at:   http://127.0.0.1:8000/docs"
 echo "========================================================"
 echo ""
 

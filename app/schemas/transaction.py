@@ -17,6 +17,7 @@ class TransactionCreate(BaseModel):
 
 
 class TransactionUpdate(BaseModel):
+    account_id: Optional[str] = None
     amount: Optional[float] = Field(None, gt=0)
     type: Optional[TransactionType] = None
     category: Optional[str] = None

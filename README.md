@@ -32,6 +32,15 @@ chmod +x run.sh
 ./run.sh
 ```
 
+When run interactively, `run.sh` asks whether the app should be reachable from
+other devices on your network (`0.0.0.0`, the default) or only from this
+machine (`127.0.0.1`). Skip the prompt with a flag:
+
+```bash
+./run.sh --lan     # all interfaces - phones/tablets on the same network can connect
+./run.sh --local   # this machine only
+```
+
 ## Demo Credentials (Sharma Family)
 
 The `run` script automatically populates a realistic database with the "Sharma Family" and their recent transactions.

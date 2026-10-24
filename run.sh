@@ -13,6 +13,8 @@ if [ ! -d ".venv" ]; then
 else
     echo "Virtual environment already exists."
     source .venv/bin/activate
+    # Keep pinned dependency versions in sync with requirements.txt
+    python -m pip install -q -r requirements.txt
 fi
 
 if [ ! -f "finance.db" ]; then
